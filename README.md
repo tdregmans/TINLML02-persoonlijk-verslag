@@ -12,7 +12,8 @@ TINLAB: Machine Learning (persoonlijk gedeelte)
 
 ## [opdracht1/](/opdracht1/)
 
-
+Zie [/opdracht1/README.md](/TINLML02-persoonlijk-verslag/opdracht1/README.md) voor meer informatie over de opdracht en de architectuur, ontwerp en tests van de oplossing.
 
 ## [opdracht2/](/opdracht2/)
 
+Zie [/opdracht2/README.md](/TINLML02-persoonlijk-verslag/opdracht2/README.md) voor meer informatie over de opdracht en de architectuur, ontwerp en tests van de oplossing.
