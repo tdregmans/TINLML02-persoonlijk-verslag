@@ -18,6 +18,8 @@ import data
 startNodes = []
 endNodes = []
 
+NO_OF_EPOCHS = 5
+
 def setup():
     # setup start nodes
     for startNodeId in range(data.inputDim):
@@ -41,15 +43,18 @@ def runEpoch(trainingSet):
     for startNodeId in range(data.inputDim):
         startNodes[startNodeId].addValue(s[startNodeId])
 
-    # activate links
+    # activate links (which automatically assign values to endNodes)
     for startNodeId in range(data.inputDim):
         startNodes[startNodeId].activateLinks()
 
-    # print outcome
+    # print value endNodes
     print("chance of symbol being 'O' is:", endNodes[0].value)
     print("chance of symbol being 'X' is:", endNodes[1].value)
 
-    # run 
+    # adjust weights of links for a more acurate outcome
+    for startNodeId in range(data.inputDim):
+        for link in startNodes[startNodeId].outgoingLinks:
+            link.reCalculateWeight() 
     
 def test(testSet):
     return {'O': 1, 'X': 0}
@@ -61,13 +66,14 @@ def denestNestedList(xss):
 
 ##########################################################################
 
+# setup the model
 setup()
 
 # training
-for epochId in range(len(data.trainingSet)):
+for epochId in range(NO_OF_EPOCHS):
     print("epoch:", epochId)
 
-    runEpoch(data.trainingSet[epochId])
+    runEpoch(data.trainingSet)
     print()
 
 # testing
