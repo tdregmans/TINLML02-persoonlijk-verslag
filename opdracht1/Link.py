@@ -23,4 +23,4 @@ class Link:
 
     def reCalculateWeight(self):
         self.previousWeights.append(self.weight)
-        self.weight = random.random() # random float between 0 and 1 
+        self.weight = random.random() # random float between 0 and 1

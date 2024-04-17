@@ -15,10 +15,14 @@ import Link
 
 import data
 
+import random
+import numpy as np
+
 startNodes = []
 endNodes = []
 
 NO_OF_EPOCHS = 5
+STRICTNESS = 0.50 # allowing a 15% error margin
 
 def setup():
     # setup start nodes
@@ -33,13 +37,71 @@ def setup():
         for endNodeId in range(data.outputDim):
             startNodes[startNodeId].addOutgoingLink(Link.Link(endNodes[endNodeId]))
 
-def runEpoch(trainingSet):
-    # reset nodes
+def trainingEpochs(trainingSet):
+    epochId = 0
+    while True:
+        # print("epoch:", epochId)
+        
+        certainty = 1
+        for trainingSymbol in trainingSet:
+            evaluation = evaluateWithNetwork(trainingSymbol[0])
+
+            # print value endNodes
+            # print("chance of symbol being 'O' is:", evaluation['O'])
+            # print("chance of symbol being 'X' is:", evaluation['X'])
+
+            # adjust certainty by lowest
+            certainty = min(evaluation["O"], evaluation["X"], certainty)
+        
+        print(certainty)
+            
+        certaintyBeforeChangingWeight = certainty
+
+        # adjust one weight of links to look for a more acurate outcome
+        randomStartNodeId = random.choice(range(data.inputDim))
+        randomLink = random.choice(startNodes[randomStartNodeId].outgoingLinks)
+        randomLink.reCalculateWeight()
+
+        certainty = 1
+        for trainingSymbol in trainingSet:
+            evaluation = evaluateWithNetwork(trainingSymbol[0])
+
+            # print value endNodes
+            # print("chance of symbol being 'O' is:", evaluation['O'])
+            # print("chance of symbol being 'X' is:", evaluation['X'])
+
+            # adjust certainty by lowest
+            certainty = min(evaluation["O"], evaluation["X"], certainty)
+
+            if evaluation["O"] > evaluation["X"] and trainingSymbol[1] == 'O':
+                pass
+            # where is the learning? in this system there is none
+            
+        print(certainty)
+
+        if certainty < certaintyBeforeChangingWeight:
+            # revert weight change because it did nothing good
+            randomLink.weight = randomLink.previousWeights[-1]
+            #print("Weight change didn't do good!")
+        else:
+            print("Weight change did do good!")
+
+        if certainty >= STRICTNESS:
+            break
+        #print()
+
+        epochId += 1
+
+def evaluateWithNetwork(symbol):
+    # reset start
     for startNodeId in range(data.inputDim):
         startNodes[startNodeId].hardReset()
-    
+    # reset end
+    for endNodeId in range(data.outputDim):
+        endNodes[endNodeId].hardReset()
+
     # assign value to startNodes
-    s = denestNestedList(trainingSet[0])
+    s = denestNestedList(symbol)
     for startNodeId in range(data.inputDim):
         startNodes[startNodeId].addValue(s[startNodeId])
 
@@ -47,17 +109,13 @@ def runEpoch(trainingSet):
     for startNodeId in range(data.inputDim):
         startNodes[startNodeId].activateLinks()
 
-    # print value endNodes
-    print("chance of symbol being 'O' is:", endNodes[0].value)
-    print("chance of symbol being 'X' is:", endNodes[1].value)
+    # use softmax function for determining endNode values
+    endNodeValues = [endNodes[0].value, endNodes[1].value]
+    normalizedEndNodeValues = np.exp(endNodeValues) / np.sum(np.exp(endNodeValues))
+    print(endNodeValues)
 
-    # adjust weights of links for a more acurate outcome
-    for startNodeId in range(data.inputDim):
-        for link in startNodes[startNodeId].outgoingLinks:
-            link.reCalculateWeight() 
-    
-def test(testSet):
-    return {'O': 1, 'X': 0}
+    # return value endNodes
+    return {'O': normalizedEndNodeValues[0], 'X': normalizedEndNodeValues[1]}
 
 def denestNestedList(xss):
     # source: https://stackoverflow.com/questions/952914/how-do-i-make-a-flat-list-out-of-a-list-of-lists
@@ -70,17 +128,19 @@ def denestNestedList(xss):
 setup()
 
 # training
-for epochId in range(NO_OF_EPOCHS):
-    print("epoch:", epochId)
+# for epochId in range(NO_OF_EPOCHS):
+#     print("epoch:", epochId)
 
-    runEpoch(data.trainingSet)
-    print()
+#     trainingEpoch(data.trainingSet)
+#     print()
+
+trainingEpochs(data.trainingSet)
+
 
 # testing
-STRICTNESS = 0.85 # allowing a 15% error margin
 wronglyIdentifiedSymbolExists = False
 for testcase in data.testSet:
-    outcome = test(testcase)
+    outcome = evaluateWithNetwork(testcase[0])
     
     print("Testcase:", testcase)
     if outcome['X'] >= STRICTNESS and outcome['O'] < STRICTNESS:
