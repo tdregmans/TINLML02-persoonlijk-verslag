@@ -4,7 +4,7 @@
     Thijs Dregmans
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
-    Node.py
+    Model.py
     Last edited: 2024-04-17 (YYYY-MM-DD)
     Version: 1.0
 
