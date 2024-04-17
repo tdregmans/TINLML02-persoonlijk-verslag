@@ -5,15 +5,22 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     Link.py
-    Last edited: 2024-04-15 (YYYY-MM-DD)
+    Last edited: 2024-04-17 (YYYY-MM-DD)
     Version: 1.0
 
 """
 
+import random
+
 class Link:
     def __init__(self, target):
         self.target = target
-        self.weight = 1 # change weight later
+        self.previousWeights = []
+        self.weight = random.random() # random float between 0 and 1 
 
     def activate(self, value):
         self.target.addValue(value * self.weight)
+
+    def reCalculateWeight(self):
+        self.previousWeights.append(self.weight)
+        self.weight = random.random() # random float between 0 and 1 

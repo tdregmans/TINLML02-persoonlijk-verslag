@@ -5,7 +5,7 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     Node.py
-    Last edited: 2024-04-15 (YYYY-MM-DD)
+    Last edited: 2024-04-17 (YYYY-MM-DD)
     Version: 1.0
 
 """
@@ -17,7 +17,6 @@ import data
 
 startNodes = []
 endNodes = []
-links = []
 
 def setup():
     # setup start nodes
@@ -33,12 +32,27 @@ def setup():
             startNodes[startNodeId].addOutgoingLink(Link.Link(endNodes[endNodeId]))
 
 def runEpoch(trainingSet):
+    # reset nodes
     for startNodeId in range(data.inputDim):
         startNodes[startNodeId].hardReset()
     
+    # assign value to startNodes
+    s = denestNestedList(trainingSet[0])
     for startNodeId in range(data.inputDim):
-        print(denestNestedList(trainingSet))
-        startNodes[startNodeId].addValue(denestNestedList(trainingSet)[startNodeId])
+        startNodes[startNodeId].addValue(s[startNodeId])
+
+    # activate links
+    for startNodeId in range(data.inputDim):
+        startNodes[startNodeId].activateLinks()
+
+    # print outcome
+    print("chance of symbol being 'O' is:", endNodes[0].value)
+    print("chance of symbol being 'X' is:", endNodes[1].value)
+
+    # run 
+    
+def test(testSet):
+    return {'O': 1, 'X': 0}
 
 def denestNestedList(xss):
     # source: https://stackoverflow.com/questions/952914/how-do-i-make-a-flat-list-out-of-a-list-of-lists
@@ -53,6 +67,35 @@ setup()
 for epochId in range(len(data.trainingSet)):
     print("epoch:", epochId)
 
-    runEpoch(data.trainingSet[epochId][0])
+    runEpoch(data.trainingSet[epochId])
+    print()
 
+# testing
+STRICTNESS = 0.85 # allowing a 15% error margin
+wronglyIdentifiedSymbolExists = False
+for testcase in data.testSet:
+    outcome = test(testcase)
+    
+    print("Testcase:", testcase)
+    if outcome['X'] >= STRICTNESS and outcome['O'] < STRICTNESS:
+        print("Identified as 'X'")
+        if testcase[1] == 'X':
+            print("Identified correctly!")
+        else:
+            print("Identified wrongly!")
+            wronglyIdentifiedSymbolExists = True
+    elif outcome['O'] >= STRICTNESS and outcome['X'] < STRICTNESS:
+        print("Identified as 'O'")
+        if testcase[1] == 'O':
+            print("Identified correctly!")
+        else:
+            print("Identified wrongly!")
+            wronglyIdentifiedSymbolExists = True
+    else:
+        print("Could not identify symbol with certainty.")
+        wronglyIdentifiedSymbolExists = True
 
+    print()
+
+# model outcome
+print("SUCCESSFUL OUTOCME:", not wronglyIdentifiedSymbolExists)

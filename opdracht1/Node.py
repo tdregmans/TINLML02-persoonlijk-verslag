@@ -5,7 +5,7 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     Node.py
-    Last edited: 2024-04-15 (YYYY-MM-DD)
+    Last edited: 2024-04-17 (YYYY-MM-DD)
     Version: 1.0
 
 """
