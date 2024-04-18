@@ -22,10 +22,13 @@ startNodes = []
 endNodes = []
 
 NO_OF_EPOCHS = 5
-STRICTNESS = 0.51 # allowing a 15% error margin
-TRAINING_STRICTNESS = 0.6 # allowing a 15% error margin
+TESTING_STRICTNESS = 0.51
+TRAINING_STRICTNESS = 0.60
 
 def setup():
+    """
+    Setup the model with startNodes, endNodes and links between them.
+    """
     # setup start nodes
     for startNodeId in range(data.inputDim):
         startNodes.append(Node.Node())
@@ -39,6 +42,9 @@ def setup():
             startNodes[startNodeId].addOutgoingLink(Link.Link(endNodes[endNodeId]))
 
 def trainingEpochs(trainingSet):
+    """
+    Train the model with trainingSet.
+    """
     epochId = 0
     while True:
         print("epoch:", epochId)
@@ -88,6 +94,9 @@ def trainingEpochs(trainingSet):
         epochId += 1
 
 def evaluateWithNetwork(symbol):
+    """
+    Evaluate a symbol (made up out of 3 times 3 times a '1' or '0') with the current Neural Network. Guess whether it is a 'X' or 'O'.
+    """
     # reset start
     for startNodeId in range(data.inputDim):
         startNodes[startNodeId].hardReset()
@@ -113,54 +122,50 @@ def evaluateWithNetwork(symbol):
     return {'O': normalizedEndNodeValues[0], 'X': normalizedEndNodeValues[1]}
 
 def denestNestedList(xss):
-    # source: https://stackoverflow.com/questions/952914/how-do-i-make-a-flat-list-out-of-a-list-of-lists
-    # tested! --> Works!
+    """
+    Remove nested lists in list.
+    source: https://stackoverflow.com/questions/952914/how-do-i-make-a-flat-list-out-of-a-list-of-lists
+    """
     return [x for xs in xss for x in xs]
+
+def testAndPrintResults(testSet):
+    results = []
+    for testcase in data.testSet:
+        outcome = evaluateWithNetwork(testcase[0])
+        
+        print("Testcase:", testcase)
+        if outcome['X'] >= TESTING_STRICTNESS and outcome['O'] < TESTING_STRICTNESS:
+            print("Identified as 'X' (with a certainty of", round(outcome['X'], 2), ")")
+            if testcase[1] == 'X':
+                print("Identified correctly!")
+                results.append(True)
+            else:
+                print("Identified wrongly!")
+                results.append(False)
+        elif outcome['O'] >= TESTING_STRICTNESS and outcome['X'] < TESTING_STRICTNESS:
+            print("Identified as 'O' (with a certainty of", round(outcome['O'], 2), ")")
+            if testcase[1] == 'O':
+                print("Identified correctly!")
+                results.append(True)
+            else:
+                print("Identified wrongly!")
+                results.append(False)
+        else:
+            print("Could not identify symbol with certainty.")
+            print("Best guess:", outcome)
+            results.append(False)
+
+    # model outcome
+    print("SUCCESSFUL OUTOCME:", all(results))
+    print("SCORE:", results)
 
 ##########################################################################
 
 # setup the model
 setup()
 
-# training
-# for epochId in range(NO_OF_EPOCHS):
-#     print("epoch:", epochId)
-
-#     trainingEpoch(data.trainingSet)
-#     print()
-
 trainingEpochs(data.trainingSet)
 
-
 # testing
-results = []
-for testcase in data.testSet:
-    outcome = evaluateWithNetwork(testcase[0])
-    
-    print("Testcase:", testcase)
-    if outcome['X'] >= STRICTNESS and outcome['O'] < STRICTNESS:
-        print("Identified as 'X' (with a certainty of", round(outcome['X'], 2), ")")
-        if testcase[1] == 'X':
-            print("Identified correctly!")
-            results.append(True)
-        else:
-            print("Identified wrongly!")
-            results.append(False)
-    elif outcome['O'] >= STRICTNESS and outcome['X'] < STRICTNESS:
-        print("Identified as 'O' (with a certainty of", round(outcome['O'], 2), ")")
-        if testcase[1] == 'O':
-            print("Identified correctly!")
-            results.append(True)
-        else:
-            print("Identified wrongly!")
-            results.append(False)
-    else:
-        print("Could not identify symbol with certainty.")
-        print("Best guess:", outcome)
-        results.append(False)
+testAndPrintResults(data.testSet)
 
-    print()
-
-# model outcome
-print("SUCCESSFUL OUTOCME:", all(results))
-print("SCORE:", results)
