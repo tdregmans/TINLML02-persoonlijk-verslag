@@ -189,6 +189,7 @@ class NN:
             else:
                 print("Could not identify symbol with certainty.")
                 print("Best guess:", outcome)
+                print("Should have been:", testcase[1])
                 results.append(False)
             testcaseId += 1
 
