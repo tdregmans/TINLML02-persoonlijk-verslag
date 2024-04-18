@@ -22,7 +22,7 @@ startNodes = []
 endNodes = []
 
 NO_OF_EPOCHS = 5
-STRICTNESS = 0.85 # allowing a 15% error margin
+STRICTNESS = 0.99 # allowing a 15% error margin
 
 def setup():
     # setup start nodes
@@ -137,7 +137,7 @@ trainingEpochs(data.trainingSet)
 
 
 # testing
-wronglyIdentifiedSymbolExists = False
+results = []
 for testcase in data.testSet:
     outcome = evaluateWithNetwork(testcase[0])
     
@@ -146,21 +146,24 @@ for testcase in data.testSet:
         print("Identified as 'X'")
         if testcase[1] == 'X':
             print("Identified correctly!")
+            results.append(True)
         else:
             print("Identified wrongly!")
-            wronglyIdentifiedSymbolExists = True
+            results.append(False)
     elif outcome['O'] >= STRICTNESS and outcome['X'] < STRICTNESS:
         print("Identified as 'O'")
         if testcase[1] == 'O':
             print("Identified correctly!")
+            results.append(True)
         else:
             print("Identified wrongly!")
-            wronglyIdentifiedSymbolExists = True
+            results.append(False)
     else:
         print("Could not identify symbol with certainty.")
-        wronglyIdentifiedSymbolExists = True
+        results.append(False)
 
     print()
 
 # model outcome
-print("SUCCESSFUL OUTOCME:", not wronglyIdentifiedSymbolExists)
+print("SUCCESSFUL OUTOCME:", all(results))
+print("SCORE:", results)
