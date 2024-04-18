@@ -22,7 +22,7 @@ startNodes = []
 endNodes = []
 
 NO_OF_EPOCHS = 5
-STRICTNESS = 0.50 # allowing a 15% error margin
+STRICTNESS = 0.85 # allowing a 15% error margin
 
 def setup():
     # setup start nodes
@@ -42,7 +42,7 @@ def trainingEpochs(trainingSet):
     while True:
         # print("epoch:", epochId)
         
-        certainty = 1
+        correctnessList = []
         for trainingSymbol in trainingSet:
             evaluation = evaluateWithNetwork(trainingSymbol[0])
 
@@ -50,19 +50,17 @@ def trainingEpochs(trainingSet):
             # print("chance of symbol being 'O' is:", evaluation['O'])
             # print("chance of symbol being 'X' is:", evaluation['X'])
 
-            # adjust certainty by lowest
-            certainty = min(evaluation["O"], evaluation["X"], certainty)
-        
-        print(certainty)
+            # adjust correctness by lowest
+            correctnessList.append(max(evaluation["O"], evaluation["X"]))
             
-        certaintyBeforeChangingWeight = certainty
+        correctnesBeforeChangingWeight = sum(correctnessList) / len(correctnessList)
 
         # adjust one weight of links to look for a more acurate outcome
         randomStartNodeId = random.choice(range(data.inputDim))
         randomLink = random.choice(startNodes[randomStartNodeId].outgoingLinks)
         randomLink.reCalculateWeight()
 
-        certainty = 1
+        correctnessList = []
         for trainingSymbol in trainingSet:
             evaluation = evaluateWithNetwork(trainingSymbol[0])
 
@@ -70,23 +68,24 @@ def trainingEpochs(trainingSet):
             # print("chance of symbol being 'O' is:", evaluation['O'])
             # print("chance of symbol being 'X' is:", evaluation['X'])
 
-            # adjust certainty by lowest
-            certainty = min(evaluation["O"], evaluation["X"], certainty)
-
+            # adjust correctness by lowest
+            correctnessList.append(max(evaluation["O"], evaluation["X"]))
+            
             if evaluation["O"] > evaluation["X"] and trainingSymbol[1] == 'O':
                 pass
             # where is the learning? in this system there is none
             
-        print(certainty)
+        correctnesAfterChangingWeight = sum(correctnessList) / len(correctnessList)
 
-        if certainty < certaintyBeforeChangingWeight:
+        if correctnesAfterChangingWeight < correctnesBeforeChangingWeight:
             # revert weight change because it did nothing good
             randomLink.weight = randomLink.previousWeights[-1]
             #print("Weight change didn't do good!")
         else:
             print("Weight change did do good!")
+            print(correctnesAfterChangingWeight)
 
-        if certainty >= STRICTNESS:
+        if correctnesAfterChangingWeight >= STRICTNESS:
             break
         #print()
 
@@ -112,7 +111,7 @@ def evaluateWithNetwork(symbol):
     # use softmax function for determining endNode values
     endNodeValues = [endNodes[0].value, endNodes[1].value]
     normalizedEndNodeValues = np.exp(endNodeValues) / np.sum(np.exp(endNodeValues))
-    print(endNodeValues)
+    # print(endNodeValues)
 
     # return value endNodes
     return {'O': normalizedEndNodeValues[0], 'X': normalizedEndNodeValues[1]}
