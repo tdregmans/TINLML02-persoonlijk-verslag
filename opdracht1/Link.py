@@ -6,7 +6,7 @@
 
     Link.py
     Last edited: 2024-04-18 (YYYY-MM-DD)
-    Version: 1.1
+    Version: 1.2
 
 """
 
