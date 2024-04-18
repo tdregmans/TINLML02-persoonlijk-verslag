@@ -5,8 +5,8 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     Model.py
-    Last edited: 2024-04-17 (YYYY-MM-DD)
-    Version: 1.0
+    Last edited: 2024-04-18 (YYYY-MM-DD)
+    Version: 1.1
 
 """
 
@@ -22,7 +22,8 @@ startNodes = []
 endNodes = []
 
 NO_OF_EPOCHS = 5
-STRICTNESS = 0.99 # allowing a 15% error margin
+STRICTNESS = 0.51 # allowing a 15% error margin
+TRAINING_STRICTNESS = 0.6 # allowing a 15% error margin
 
 def setup():
     # setup start nodes
@@ -40,52 +41,47 @@ def setup():
 def trainingEpochs(trainingSet):
     epochId = 0
     while True:
-        # print("epoch:", epochId)
+        print("epoch:", epochId)
+        ##############################################################
         
-        correctnessList = []
+        correctnessCounter = 0
         for trainingSymbol in trainingSet:
             evaluation = evaluateWithNetwork(trainingSymbol[0])
 
-            # print value endNodes
-            # print("chance of symbol being 'O' is:", evaluation['O'])
-            # print("chance of symbol being 'X' is:", evaluation['X'])
-
-            # adjust correctness by lowest
-            correctnessList.append(max(evaluation["O"], evaluation["X"]))
+            for evalItemSymbol, evalItemValue in evaluation.items():
+                if evalItemValue > TRAINING_STRICTNESS and evalItemSymbol == trainingSymbol[1]:
+                    # guessed correctly
+                    correctnessCounter += 1
             
-        correctnesBeforeChangingWeight = sum(correctnessList) / len(correctnessList)
+        correctnesBeforeChangingWeight = correctnessCounter
+
+        ##############################################################
 
         # adjust one weight of links to look for a more acurate outcome
         randomStartNodeId = random.choice(range(data.inputDim))
         randomLink = random.choice(startNodes[randomStartNodeId].outgoingLinks)
         randomLink.reCalculateWeight()
 
-        correctnessList = []
+        ##############################################################
+
+        correctnessCounter = 0
         for trainingSymbol in trainingSet:
             evaluation = evaluateWithNetwork(trainingSymbol[0])
 
-            # print value endNodes
-            # print("chance of symbol being 'O' is:", evaluation['O'])
-            # print("chance of symbol being 'X' is:", evaluation['X'])
+            for evalItemSymbol, evalItemValue in evaluation.items():
+                if evalItemValue > TRAINING_STRICTNESS and evalItemSymbol == trainingSymbol[1]:
+                    # guessed correctly
+                    correctnessCounter += 1
+            
+        correctnesAfterChangingWeight = correctnessCounter
 
-            # adjust correctness by lowest
-            correctnessList.append(max(evaluation["O"], evaluation["X"]))
-            
-            if evaluation["O"] > evaluation["X"] and trainingSymbol[1] == 'O':
-                pass
-            # where is the learning? in this system there is none
-            
-        correctnesAfterChangingWeight = sum(correctnessList) / len(correctnessList)
+        ##############################################################
 
         if correctnesAfterChangingWeight < correctnesBeforeChangingWeight:
             # revert weight change because it did nothing good
             randomLink.weight = randomLink.previousWeights[-1]
-            #print("Weight change didn't do good!")
-        else:
-            print("Weight change did do good!")
-            print(correctnesAfterChangingWeight)
 
-        if correctnesAfterChangingWeight >= STRICTNESS:
+        if correctnesAfterChangingWeight >= len(trainingSet):
             break
         #print()
 
@@ -143,7 +139,7 @@ for testcase in data.testSet:
     
     print("Testcase:", testcase)
     if outcome['X'] >= STRICTNESS and outcome['O'] < STRICTNESS:
-        print("Identified as 'X'")
+        print("Identified as 'X' (with a certainty of", round(outcome['X'], 2), ")")
         if testcase[1] == 'X':
             print("Identified correctly!")
             results.append(True)
@@ -151,7 +147,7 @@ for testcase in data.testSet:
             print("Identified wrongly!")
             results.append(False)
     elif outcome['O'] >= STRICTNESS and outcome['X'] < STRICTNESS:
-        print("Identified as 'O'")
+        print("Identified as 'O' (with a certainty of", round(outcome['O'], 2), ")")
         if testcase[1] == 'O':
             print("Identified correctly!")
             results.append(True)
@@ -160,6 +156,7 @@ for testcase in data.testSet:
             results.append(False)
     else:
         print("Could not identify symbol with certainty.")
+        print("Best guess:", outcome)
         results.append(False)
 
     print()
