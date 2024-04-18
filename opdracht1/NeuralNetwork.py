@@ -6,7 +6,7 @@
 
     NeuralNetwork.py
     Last edited: 2024-04-18 (YYYY-MM-DD)
-    Version: 1.2
+    Version: 2.0
 
 """
 
@@ -20,18 +20,21 @@ STANDARD_TESTING_STRICTNESS = 0.51
 STANDARD_TRAINING_STRICTNESS = 0.85 # Allow a 15% error margin
 
 class NN:
-    def __init__(self, noOfInputs, noOfOutputs):
+    def __init__(self, noOfInputs, noOfOutputs, hiddenLayers = []):
         """
         Neural Network constructor.
+        There is an optional parameter `hiddenLayers` which accepts a list with Integers (> 0) representing the hidden layers and the dimension of that layer.
+        For example, [3, 4, 9] stands for 3 hidden layers: the first has 3 nodes, the second has 4 nodes and the last hidden layer has 9 nodes.
         """
         self.startNodes = []
         self.endNodes = []
+        self.hiddenNodes = []
         self.noOfInputs = noOfInputs
         self.noOfOutputs = noOfOutputs
         
-        self.__setup()
+        self.__setup(hiddenLayers)
 
-    def __setup(self):
+    def __setup(self, hiddenLayers = []):
         """
         Setup the model with startNodes, endNodes and links between them.
         """
@@ -42,10 +45,23 @@ class NN:
         for endNodeId in range(self.noOfOutputs):
             self.endNodes.append(Node.Node())
 
-        # setup links between all nodes
-        for startNodeId in range(self.noOfInputs):
-            for endNodeId in range(self.noOfOutputs):
-                self.startNodes[startNodeId].addOutgoingLink(Link.Link(self.endNodes[endNodeId]))
+        # setup hidden nodes
+        for noOfNodesInLayer in hiddenLayers:
+            nodes = []
+            for nodeId in range(noOfNodesInLayer):
+                nodes.append(Node.Node())
+            self.hiddenNodes.append(nodes)
+
+        noOfLinkSets = 1 + len(self.hiddenNodes)
+
+        allLayers = [self.startNodes] + self.hiddenNodes + [self.endNodes]
+
+        for layerId in range(len(allLayers) - 1):
+            for originLayerId in range(len(allLayers[layerId])):
+                for targetLayerId in range(len(allLayers[layerId + 1])):
+                    (allLayers[layerId][originLayerId]).addOutgoingLink(Link.Link(allLayers[layerId + 1][targetLayerId]))
+        
+        print("Setup completed!")
 
     def trainingEpochs(self, trainingSet, trainingStrictness = STANDARD_TRAINING_STRICTNESS):
         """
@@ -53,6 +69,7 @@ class NN:
         """
         epochId = 0
         while True:
+            print("Epoch:", epochId)
             ##############################################################
             
             correctnessCounter = 0
@@ -69,9 +86,17 @@ class NN:
             ##############################################################
 
             # adjust one weight of links to look for a more acurate outcome
-            randomStartNodeId = random.choice(range(self.noOfInputs))
-            randomLink = random.choice(self.startNodes[randomStartNodeId].outgoingLinks)
-            randomLink.reCalculateWeight()
+            allOriginNodes = self.startNodes + self.hiddenNodes
+            while True: # use loop to avoid taking 
+                randomNode = random.choice(allOriginNodes)
+                if isinstance(randomNode, list):
+                    randomNode = randomNode[0]
+                if len(randomNode.outgoingLinks) > 0:
+                    randomLink = random.choice(randomNode.outgoingLinks)
+                    randomLink.reCalculateWeight()
+
+                    break
+                print("!")
 
             ##############################################################
 

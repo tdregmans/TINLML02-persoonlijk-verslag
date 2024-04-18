@@ -6,7 +6,7 @@
 
     Node.py
     Last edited: 2024-04-18 (YYYY-MM-DD)
-    Version: 1.2
+    Version: 2.0
 
 """
 

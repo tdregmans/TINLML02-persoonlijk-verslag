@@ -4,7 +4,7 @@
     Thijs Dregmans
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
-    Link.py
+    Layer.py
     Last edited: 2024-04-18 (YYYY-MM-DD)
     Version: 2.0
 
@@ -12,8 +12,14 @@
 
 import random
 
-class Link:
-    def __init__(self, target):
+# constants for classification of Layers
+FIRST = 0
+HIDDEN = 1
+LAST = 2
+
+class Layer:
+    def __init__(self, type = HIDDEN):
+        self.type = type
         self.target = target
         self.previousWeights = []
         self.weight = random.random() # random float between 0 and 1 
