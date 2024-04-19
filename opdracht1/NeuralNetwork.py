@@ -5,13 +5,10 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     NeuralNetwork.py
-    Last edited: 2024-04-18 (YYYY-MM-DD)
-    Version: 2.0
+    Last edited: 2024-04-19 (YYYY-MM-DD)
+    Version: 3.0
 
 """
-
-import Node
-import Link
 
 import random
 import numpy as np
@@ -26,40 +23,24 @@ class NN:
         There is an optional parameter `hiddenLayers` which accepts a list with Integers (> 0) representing the hidden layers and the dimension of that layer.
         For example, [3, 4, 9] stands for 3 hidden layers: the first has 3 nodes, the second has 4 nodes and the last hidden layer has 9 nodes.
         """
-        self.startNodes = []
-        self.endNodes = []
-        self.hiddenNodes = []
-        self.noOfInputs = noOfInputs
-        self.noOfOutputs = noOfOutputs
+        self.network = []
         
-        self.__setup(hiddenLayers)
+        self.__setup(noOfInputs, noOfOutputs, hiddenLayers)
 
-    def __setup(self, hiddenLayers = []):
+    def __setup(self, noOfInputs, noOfOutputs, hiddenLayers):
         """
-        Setup the model with startNodes, endNodes and links between them.
+        Setup the model with matrices in self.network.
         """
-        # setup start nodes
-        for startNodeId in range(self.noOfInputs):
-            self.startNodes.append(Node.Node())
-        # setup end nodes
-        for endNodeId in range(self.noOfOutputs):
-            self.endNodes.append(Node.Node())
-
-        # setup hidden nodes
-        for noOfNodesInLayer in hiddenLayers:
-            nodes = []
-            for nodeId in range(noOfNodesInLayer):
-                nodes.append(Node.Node())
-            self.hiddenNodes.append(nodes)
-
-        noOfLinkSets = 1 + len(self.hiddenNodes)
-
-        allLayers = [self.startNodes] + self.hiddenNodes + [self.endNodes]
+        allLayers = [noOfInputs] + hiddenLayers + [noOfOutputs]
 
         for layerId in range(len(allLayers) - 1):
-            for originLayerId in range(len(allLayers[layerId])):
-                for targetLayerId in range(len(allLayers[layerId + 1])):
-                    (allLayers[layerId][originLayerId]).addOutgoingLink(Link.Link(allLayers[layerId + 1][targetLayerId]))
+            matrix = []
+            for origin in range(allLayers[layerId]):
+                row = []
+                for target in range(allLayers[layerId + 1]):
+                    row.append(random.random())
+                matrix.append(row)
+            self.network.append(matrix)
         
         print("Setup completed!")
 
@@ -129,29 +110,38 @@ class NN:
         """
         Evaluate a symbol (made up out of 3 times 3 times a '1' or '0') with the current Neural Network. Guess whether it is a 'X' or 'O'.
         """
-        # reset start
-        for startNodeId in range(self.noOfInputs):
-            self.startNodes[startNodeId].hardReset()
-        # reset end
-        for endNodeId in range(self.noOfOutputs):
-            self.endNodes[endNodeId].hardReset()
+        # # reset start
+        # for startNodeId in range(self.noOfInputs):
+        #     self.startNodes[startNodeId].hardReset()
+        # # reset end
+        # for endNodeId in range(self.noOfOutputs):
+        #     self.endNodes[endNodeId].hardReset()
 
-        # assign value to startNodes
-        s = self.__denestNestedList(symbol)
-        for startNodeId in range(self.noOfInputs):
-            self.startNodes[startNodeId].addValue(s[startNodeId])
+        # # assign value to startNodes
+        # s = self.__denestNestedList(symbol)
+        # for startNodeId in range(self.noOfInputs):
+        #     self.startNodes[startNodeId].addValue(s[startNodeId])
 
-        # activate links (which automatically assign values to endNodes)
-        for startNodeId in range(self.noOfInputs):
-            self.startNodes[startNodeId].activateLinks()
+        # # activate links (which automatically assign values to endNodes)
+        # for startNodeId in range(self.noOfInputs):
+        #     self.startNodes[startNodeId].activateLinks()
 
-        # use softmax function for determining endNode values
-        endNodeValues = [self.endNodes[0].value, self.endNodes[1].value]
-        normalizedEndNodeValues = np.exp(endNodeValues) / np.sum(np.exp(endNodeValues))
-        # print(endNodeValues)
+        
+        # self.network[layerId][origin][target]
+
+        nodeValues = self.__denestNestedList(symbol)
+
+        for layerId in range(len(self.network)):
+            layer = self.network[layerId]
+
+            nextNodeValues = None # something with nodeValues and layer
+
+            # use softmax function for determining values
+            nodeValues = np.exp(nextNodeValues) / np.sum(np.exp(nextNodeValues))
+            # print(endNodeValues)
 
         # return value endNodes
-        return {'O': normalizedEndNodeValues[0], 'X': normalizedEndNodeValues[1]}
+        return {'O': nodeValues[0], 'X': nodeValues[1]}
 
     def __denestNestedList(self, xss):
         """
