@@ -66,18 +66,13 @@ class NN:
 
             ##############################################################
 
-            # adjust one weight of links to look for a more acurate outcome
-            allOriginNodes = self.startNodes + self.hiddenNodes
-            while True: # use loop to avoid taking 
-                randomNode = random.choice(allOriginNodes)
-                if isinstance(randomNode, list):
-                    randomNode = randomNode[0]
-                if len(randomNode.outgoingLinks) > 0:
-                    randomLink = random.choice(randomNode.outgoingLinks)
-                    randomLink.reCalculateWeight()
-
-                    break
-                print("!")
+            # adjust one weight of links to look for a more acurate outcome            
+            allMatrices = self.network
+            randomMatrixId = random.choice(range(len(allMatrices)))
+            randomRowId = random.choice(range(len(self.network[randomMatrixId])))
+            randomLinkId = random.choice(range(len(self.network[randomMatrixId][randomRowId])))
+            oldLinkWeight = self.network[randomMatrixId][randomRowId][randomLinkId]
+            self.network[randomMatrixId][randomRowId][randomLinkId] = random.random()
 
             ##############################################################
 
@@ -96,7 +91,7 @@ class NN:
 
             if correctnesAfterChangingWeight < correctnesBeforeChangingWeight:
                 # revert weight change because it did nothing good
-                randomLink.weight = randomLink.previousWeights[-1]
+                self.network[randomMatrixId][randomRowId][randomLinkId] = oldLinkWeight
 
             if correctnesAfterChangingWeight >= len(trainingSet):
                 break
@@ -110,35 +105,27 @@ class NN:
         """
         Evaluate a symbol (made up out of 3 times 3 times a '1' or '0') with the current Neural Network. Guess whether it is a 'X' or 'O'.
         """
-        # # reset start
-        # for startNodeId in range(self.noOfInputs):
-        #     self.startNodes[startNodeId].hardReset()
-        # # reset end
-        # for endNodeId in range(self.noOfOutputs):
-        #     self.endNodes[endNodeId].hardReset()
-
-        # # assign value to startNodes
-        # s = self.__denestNestedList(symbol)
-        # for startNodeId in range(self.noOfInputs):
-        #     self.startNodes[startNodeId].addValue(s[startNodeId])
-
-        # # activate links (which automatically assign values to endNodes)
-        # for startNodeId in range(self.noOfInputs):
-        #     self.startNodes[startNodeId].activateLinks()
-
-        
-        # self.network[layerId][origin][target]
-
         nodeValues = self.__denestNestedList(symbol)
 
         for layerId in range(len(self.network)):
-            layer = self.network[layerId]
+            matrix = self.network[layerId]
+            nextNodeValues = []
+            
+            # foreach node in target
+            for targetId in range(len(matrix[0])):
+                # calculate new value
+                newValue = 0
+                for originId in range(len(matrix)):
+                    newValue += (self.network[layerId][originId][targetId] * nodeValues[originId])
+                
+                nextNodeValues.append(newValue)
+            
+            # assign values of next nodes to current nodes (for new layer)
+            nodeValues = nextNodeValues
 
-            nextNodeValues = None # something with nodeValues and layer
-
-            # use softmax function for determining values
-            nodeValues = np.exp(nextNodeValues) / np.sum(np.exp(nextNodeValues))
-            # print(endNodeValues)
+        # use softmax function for determining values
+        nodeValues = np.exp(nodeValues) / np.sum(np.exp(nodeValues))
+        # print(endNodeValues)
 
         # return value endNodes
         return {'O': nodeValues[0], 'X': nodeValues[1]}

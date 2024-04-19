@@ -34,4 +34,4 @@ nn.trainingEpochs(data.trainingSet, TRAINING_STRICTNESS)
 print()
 
 # test Neural Network
-# nn.testAndPrintResults(data.testSet, TESTING_STRICTNESS)
+nn.testAndPrintResults(data.testSet, TESTING_STRICTNESS)
