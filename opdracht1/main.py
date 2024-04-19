@@ -5,8 +5,8 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     main.py
-    Last edited: 2024-04-18 (YYYY-MM-DD)
-    Version: 2.0
+    Last edited: 2024-04-19 (YYYY-MM-DD)
+    Version: 3.0
 
 """
 
