@@ -7,6 +7,8 @@
     NeuralNetwork.py
     Last edited: 2024-05-09 (YYYY-MM-DD)
     Version: 5.0
+	
+	Source: https://www.geeksforgeeks.org/backpropagation-in-machine-learning/
 
 """
 
