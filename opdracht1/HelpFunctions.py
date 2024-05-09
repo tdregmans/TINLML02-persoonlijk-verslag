@@ -1,3 +1,15 @@
+"""
+
+    TINLML02
+    Thijs Dregmans
+    https://github.com/tdregmans/TINLML02-persoonlijk-verslag
+
+    HelpFunctions.py
+    Last edited: 2024-05-09 (YYYY-MM-DD)
+    Version: 5.0
+
+"""
+
 def denestNestedList(xss):
     """
     Remove nested lists in list.
