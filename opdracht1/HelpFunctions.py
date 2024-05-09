@@ -38,3 +38,42 @@ def symbolToExpectedOut(symbol):
         return [1, 0]
     else:
         ValueError(symbol)
+
+def effectivelyPrintOutput(outputs, expectedOutputs):
+    """
+    Print the results in a clear way.
+    """
+    results = []
+
+    for outputId in range(len(outputs)):
+        output = outputs[outputId]
+        expectedOutput = expectedOutputs[outputId]
+        
+        print("Testcase", outputId)
+
+        if output[0] > output[1]:
+            print("Identified as 'O' (with a certainty of", round(max(output), 2), ")")
+            if expectedOutput[0] > expectedOutput[1]:
+                print("Identified correctly!")
+                results.append(True)
+            else:
+                print("Identified wrongly!")
+                results.append(False)
+        elif output[0] < output[1]:
+            print("Identified as 'X' (with a certainty of", round(max(output), 2), ")")
+            if expectedOutput[0] < expectedOutput[1]:
+                print("Identified correctly!")
+                results.append(True)
+            else:
+                print("Identified wrongly!")
+                results.append(False)
+        else:
+            print("Could not identify symbol.")
+            print("Outcome was 50/50!")
+            results.append(False)
+
+    print()
+    
+    # model outcome
+    print("SUCCESSFUL OUTCOME:", all(results))
+    print("SCORE:", results)

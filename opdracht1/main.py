@@ -32,4 +32,4 @@ Z = np.array(HelpFunctions.retrieveInputSets(data.testSet))
 # Test the trained model
 output = nn.feedforward(Z)
 print("Predictions after training:")
-print(output)
+HelpFunctions.effectivelyPrintOutput(output, HelpFunctions.retrieveOutputSets(data.testSet))
