@@ -22,14 +22,12 @@ X = np.array(HelpFunctions.retrieveInputSets(data.trainingSet))
 
 # define y (expected outcomes)
 y = np.array(HelpFunctions.retrieveOutputSets(data.trainingSet))
-print(X)
-print(y)
 
 nn = NeuralNetwork.NeuralNetwork(input_size=9, hidden_size=4, output_size=2)
 nn.train(X, y, epochs=10000, learning_rate=0.1)
 
 # define Z (testset)
-Z = np.array([HelpFunctions.retrieveInputSets(data.testSet)])
+Z = np.array(HelpFunctions.retrieveInputSets(data.testSet))
 
 # Test the trained model
 output = nn.feedforward(Z)
