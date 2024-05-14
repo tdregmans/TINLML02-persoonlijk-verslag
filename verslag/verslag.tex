@@ -1,8 +1,9 @@
 % tools voor document
 \documentclass{article} % definieer type document (article, resume, etc...)
 \usepackage[english]{babel} % definieer taal van document
-
+\usepackage{graphicx}
 \usepackage[a4paper]{geometry} % definieer formaat van document
+\usepackage{hyperref}
 
 \begin{document}
     %%%%%% TITLE PAGE %%%%%
@@ -41,18 +42,66 @@
     \tableofcontents
     \newpage
 
-    %%%%% NEURALE NETWERKEN %%%%%
-    \section{Neurale Netwerken}
-    
-        [Schrijf over nn]
+    %%%% INTRO %%%%
+    \section*{Introductie}
+
+    Voor mijn opleiding Technische Informatica was er de mogelijkheid te kiezen voor Machine Learing. Mijn keuze voor ML was heel bewust. \\
+    Iedereen praat over AI maar niemand weet precies hoe het werkt. (Dat is het beeld bij mij.) Het zelf bouwen en trainen van een neuraal netwerk lijkt me leuk en heel leerzaam. Ook de discussie over de filosofische en ethische aspecten zijn heel interessant. De invloed van je mensbeeld op beeldvorming van AI en/of machine learning is enorm. Het lijkt me leuk om deel te nemen aan die discussie. \\ \\
+    In dit verslag beschrijf ik welke kennis ik tijdens de cursus heb verworven, welke opdrachten ik heb gemaakt, hoe ik daarbij te werk ben gegaan en ik reflecteer op het project en de leerdoelen.
 
     \newpage
 
-    %%%%% Papers %%%%%
-    \section{Gelezen Papers}
+    %%%%% Verworven kennis en persoonlijke opdrachten voortgang %%%%%
+    \section{Verworven kennis en persoonlijke opdrachten voortgang}
+
+        De cursus is opgedeeld in 2 persoonlijke programmeer opdrachten en 1 groepsopdracht. \\
+        De broncode voor elke opdracht is te vinden op de Github pagina: \href{https://github.com/tdregmans/TINLML02-persoonlijk-verslag}{tdregmans/TINLML02-persoonlijk-verslag} De verschillende branches bevatten verschillende versies van de opdrachten.
+
+        %%%%% NEURALE NETWERKEN %%%%%
+        \subsection{Opdracht 1: Neurale Netwerken}
+        
+            In de eerste opdracht is het doel om te gaan begrijpen hoe een Neuraal Netwerk in elkaar zit. \\
+            \begin{center}
+                \includegraphics[width=7cm]{nn.png}
+            \end{center} 
+            
+            Een Neuraal Netwerk bestaat uit zogenaamde 'nodes' en 'links'. De 'nodes' zijn de knoppen in het netwerk en de 'links' zijn de pijlen die tussen de nodes lopen, in elke laag. \\
+            In het voorbeeld hierboven zijn er 3 lagen: 1 input laag, 1 'hidden' laag en 1 output laag. \\
+            De input nodes zijn de parameters. Die krijgen een bepaalde waarde. De links geven die vervolgens door aan de nodes in de volgende laag. Die nodes hebben weer links naar de output laag. De links geven de waardes door aan die laag. De links geven de waade niet zomaar door. Elke link heeft een gewicht. Dat is een getal waarmee de waarde van de node mee wordt vermenigvuldigd. Door de gewichten te varieren tellen bepaalde nodes (die inputs voorstellen) zwaarder dan anderen. Dit zorgt voor het 'slimme' van het netwerk. \\ \\
+            Voor deze opdracht moest een Neuraal Netwerk gebouwd worden in Python waarmee een cirkel van een kruis onscheiden moest kunnen worden. De symbolen werden voorgesteld door een serie van 3x3 bits. \\
+            Voor de eerste versie van de opdracht is begonnen met het implementeren van de intuitieve classes 'Node', 'Link' en 'NeuralNetwork'. Dit komt overeen met \href{https://github.com/tdregmans/TINLML02-persoonlijk-verslag/tree/opdracht1-v2.0/opdracht1}{branch opdracht1-v2.0}. \\ \\
+            Na gebruik van 'Node' en 'Link' objecten is overgegaan op gebruik van numpy matrices om de gewichten te bewaren. Dit heeft als voordeel dat het sneller is, en een kleinere codebase vereist. Dit is geimplementeerd in \href{https://github.com/tdregmans/TINLML02-persoonlijk-verslag/tree/opdracht1-v3.1/opdracht1}{branch opdracht1-v3.1}. \\ \\
+            Alle versies t/m \(v4.*\) veranderen de gewichten random. Er wordt dan gekeken of de verandering tot een beter resultaat heeft geleid. Als dat niet zo is, dan wordt de verandering teruggedraaid. Mocht dat wel zo zijn, dan is het model verbeterd in die cycli. De verandering blijft dan staan. Vanaf versie \(v5.0\) wordt gebruik gemaakt van een Neuraal Netwerk dat met behulp van een 'cost-function' en backward propagation efficient het model verbeterd. Dit is gebaseerd op een code-snippet van geeksforgeeks.com: \href{https://www.geeksforgeeks.org/backpropagation-in-machine-learning/#example-of-backpropagation-in-machine-learning}{example of backpropagation in machine learning}. Dit voorbeeld is aangepast zodat het toepasbaar voor deze opdracht. Het is geimplementeerd in \href{https://github.com/tdregmans/TINLML02-persoonlijk-verslag/tree/opdracht1-v5.0/opdracht1}{branch opdracht1-v5.0}.
     
-        [Schrijf over gelezen papers]
+        \newpage
+
+        %%%%% GENETISCHE ALGORITMEN %%%%%
+        \subsection{Opdracht 2: Genetische Algoritmen}
+        
+            [Schrijf over ga]
     
+        \newpage
+
+        %%%%% TORCS %%%%%
+        \subsection{Eindopdracht: TORCS Neuraal Netwerk}
+        
+            [Schrijf over torcs]
+    
+        \newpage
+    
+        %%%%% Papers %%%%%
+        \subsection{Gelezen Papers}
+        
+            [Schrijf over gelezen papers]
+        
+        \newpage
+
+    %%%%% Persoonlijke evaluatie op project en leerdoelen %%%%%
+
+    \section{Persoonlijke evaluatie op project en leerdoelen}
+
+    % blabla
+
     \newpage
 
 
