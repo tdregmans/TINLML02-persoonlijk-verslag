@@ -96,14 +96,17 @@ class SongGenerator:
 
     def mutateSong(song, feedbackLastSong=rating.MID, noOfMutationsPerVariant = NO_OF_MUTATIONS_PER_VARIANT):
 
-        ...
-
-        # todo
         s = list(song)
-        for mutation in range(noOfMutationsPerVariant):
-            randomTrack = list(random.choice(s))
-            randomTrack[random.randint(0, len(randomTrack))] = (random.choice(POSSIBLE_NOTES), random.choice(POSSIBLE_NOTE_VALUES))
 
-        print(song)
-        print(s)
+        # step 1: selection
+        # generate a song and score pieces of the song
+        # let's divide a song in 4 pieces; each having a rating
+
+        # step 2: crossover
+        # crossover pieces in different songs that are scored higher
+
+
+        # step 3: mutations
+        # mutate random pieces in the songs
+
         return s
