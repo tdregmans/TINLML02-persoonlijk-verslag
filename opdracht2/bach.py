@@ -1,6 +1,16 @@
-# source: https://wiztech.nl/hr/ti/tinlab_ml/progs/music
+"""
 
-import muser as ms
+    TINLML02
+    Thijs Dregmans
+    https://github.com/tdregmans/TINLML02-persoonlijk-verslag
+
+    main.py
+    Last edited: 2024-05-22 (YYYY-MM-DD)
+    Version: 1.0
+
+    source: https://wiztech.nl/hr/ti/tinlab_ml/progs/music
+
+"""
 
 bach = (
     (
@@ -25,6 +35,3 @@ bach = (
         ('b2*', -2),
     )
 )
-
-muser = ms.Muser ()
-muser.generate (bach)
