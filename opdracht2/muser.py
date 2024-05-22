@@ -19,9 +19,7 @@ import tomita.legacy.pysynth as ps
 import shutil as su
 
 class Muser:
-    def generate (self, song):
-        songFileName = 'song.wav'
-
+    def generate (self, song, songFileName):
         for trackIndex, track in enumerate (song):
             ps.make_wav (
                 track,

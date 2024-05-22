@@ -16,6 +16,7 @@
 import muser as ms
 from playsound import playsound
 import random
+from time import gmtime, strftime
 
 # constants
 NO_OF_ITERATIONS = 20
@@ -77,12 +78,15 @@ class SongGenerator:
     def __init__(self, base):
         self.muser = ms.Muser()
         self.paths = []
+        self.song = base
     
     def generateSong(self):
 
-        ...
-        # todo
+        now = strftime("%Y%m%d%H%M%S", gmtime())
+        filename = f"song{now}.wav"
+        self.muser.generate(self.song, filename)
 
+        self.paths.append(filename)
         self.playSong()
     
     def playSong(self, path=None):
