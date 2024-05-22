@@ -4,7 +4,7 @@
     Thijs Dregmans
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
-    main.py
+    muser.py
     Last edited: 2024-05-22 (YYYY-MM-DD)
     Version: 1.0
 
