@@ -20,6 +20,7 @@ import Generator as sg
 NO_OF_ITERATIONS = 20
 NO_OF_VARIANTS_PER_ITERATION = 5
 NO_OF_MUTATIONS_PER_VARIANT = 10
+NO_OF_RATINGS = 2
 
 def inputInt(prompt, errorMessage = ""):
     """
@@ -39,6 +40,12 @@ def inputInt(prompt, errorMessage = ""):
         except ValueError:
             print(errorMessage)
 
+def rateSong(noOfRatings = NO_OF_RATINGS):
+    ratings = []
+    for ratingId in range(noOfRatings):
+        ratings.append(inputInt(f"Rate part {ratingId + 1}/{noOfRatings} from 0 to 10: ", "Invalid input. Must be an integer from 0 to 10"))
+    return ratings
+
 if __name__ == "__main__":
     # create generator
     generator = sg.SongGenerator(bach.bach)
@@ -47,7 +54,7 @@ if __name__ == "__main__":
     generator.generateSong()
 
     # rate the song
-    rating = inputInt("Rate from 0 to 10: ", "Invalid input. Must be an integer from 0 to 10")
+    rating = rateSong()
 
     for iterationId in range(NO_OF_ITERATIONS):
 
@@ -59,7 +66,7 @@ if __name__ == "__main__":
 
         # rate the song
         if iterationId < NO_OF_ITERATIONS - 1:
-            rating = inputInt("Rate from 0 to 10: ", "Invalid input. Must be an integer from 0 to 10")
+            rating = rateSong()
     
     # Final song
     print("Final song generated!")
