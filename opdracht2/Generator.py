@@ -5,7 +5,7 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     generator.py
-    Last edited: 2024-05-22 (YYYY-MM-DD)
+    Last edited: 2024-05-23 (YYYY-MM-DD)
     Version: 1.0
 
     back.py and muser.py come from: https://wiztech.nl/hr/ti/tinlab_ml/progs/music
@@ -81,11 +81,12 @@ class SongGenerator:
         self.song = base
     
     def generateSong(self):
-
+        # create filename
         now = strftime("%Y%m%d%H%M%S", gmtime())
         filename = f"song{now}.wav"
+        # generate song
         self.muser.generate(self.song, filename)
-
+        # add song path to paths and play the song
         self.paths.append(filename)
         self.playSong()
     
@@ -94,9 +95,8 @@ class SongGenerator:
             path = self.paths[-1]
         playsound(path)
 
-    def mutateSong(song, feedbackLastSong=rating.MID, noOfMutationsPerVariant = NO_OF_MUTATIONS_PER_VARIANT):
-
-        s = list(song)
+    def mutateSong(self, rating, feedbackLastSong=rating.MID, noOfMutationsPerVariant = NO_OF_MUTATIONS_PER_VARIANT):
+        
 
         # step 1: selection
         # generate a song and score pieces of the song
