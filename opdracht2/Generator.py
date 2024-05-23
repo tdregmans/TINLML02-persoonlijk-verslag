@@ -16,6 +16,7 @@
 import muser as ms
 from playsound import playsound
 import random
+import numpy as np
 from time import gmtime, strftime
 
 # constants
@@ -79,10 +80,11 @@ class SongGenerator:
         self.muser = ms.Muser()
         self.paths = []
         self.song = []
+        self.ratings = []
         
         for track in base:
             self.song.append(list(track))
-    
+
     def generateSong(self):
         # create filename
         now = strftime("%Y%m%d%H%M%S", gmtime())
@@ -97,32 +99,37 @@ class SongGenerator:
         if path == None:
             path = self.paths[-1]
         playsound(path)
+    
+    def getFitness(self):
+        # fitness of a song is defined as the standard deviation of all note lengths
+        trackFitnessSum = 0
+        for track in self.song:
+            noteValues =  list(map(float, np.array(self.song[0]).T[1]))
+            trackFitnessSum += np.std(np.array(noteValues))
+        return trackFitnessSum # Problem when using autoFitness: The whole song is rated; while instead parts of the song should be rated, so crossover is possible!!!!
 
-    def mutateSong(self, rating, feedbackLastSong=rating.MID, noOfMutationsPerVariant = NO_OF_MUTATIONS_PER_VARIANT):
+    def mutateSongRandom(self, noOfMutationsPerVariant = NO_OF_MUTATIONS_PER_VARIANT):
+        # mutate existing song
+        for mutation in range(noOfMutationsPerVariant):
+            randomTrackId = random.randint(0, len(self.song) - 1)
+            randomNoteId = random.randint(0, len(self.song[randomTrackId]) - 1)
+
+            newRandomNote = (random.choice(POSSIBLE_NOTES), random.choice(POSSIBLE_NOTE_VALUES))
+
+            self.song[randomTrackId][randomNoteId] = newRandomNote
+    
+    def crossoverTraits(self):
+        pass
+
+    def mutateSong(self, ratings, feedbackLastSong=rating.MID, noOfMutationsPerVariant = NO_OF_MUTATIONS_PER_VARIANT):
 
         if len(self.paths) <= 1:
             
             # mutate only existing song
-            for mutation in range(noOfMutationsPerVariant):
-                randomTrackId = random.randint(0, len(self.song) - 1)
-                randomNoteId = random.randint(0, len(self.song[randomTrackId]) - 1)
-
-                newRandomNote = (random.choice(POSSIBLE_NOTES), random.choice(POSSIBLE_NOTE_VALUES))
-
-                self.song[randomTrackId][randomNoteId] = newRandomNote
+            self.mutateSongRandom()
         else:
-
             # crossover between the highest rated tracks
+            self.crossoverTraits(ratings)
 
             # and introduce random mutations
-
-        # step 1: selection
-        # generate a song and score pieces of the song
-        # let's divide a song in 4 pieces; each having a rating
-
-        # step 2: crossover
-        # crossover pieces in different songs that are scored higher
-
-
-        # step 3: mutations
-        # mutate random pieces in the songs
+            self.mutateSongRandom()
