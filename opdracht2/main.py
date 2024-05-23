@@ -46,15 +46,26 @@ def rateSong(noOfRatings = NO_OF_RATINGS):
         ratings.append(inputInt(f"Rate part {ratingId + 1}/{noOfRatings} from 0 to 10: ", "Invalid input. Must be an integer from 0 to 10"))
     return ratings
 
+def autoRateSong(noOfRatings = NO_OF_RATINGS):
+    ratings = []
+    for ratingId in range(noOfRatings):
+        ratings.append(print(generator.getFitness()))
+    return ratings
+
 if __name__ == "__main__":
+    # simple bach
+    simpleBach = [bach.bach[0]]
     # create generator
-    generator = sg.SongGenerator(bach.bach)
+    generator = sg.SongGenerator(simpleBach)
 
     # compose song and play it
     generator.generateSong()
 
     # rate the song
     rating = rateSong()
+
+    # optional: Use automatic fitness-function to rate the song
+    # rating = autoRateSong()
 
     for iterationId in range(NO_OF_ITERATIONS):
 
