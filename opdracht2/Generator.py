@@ -78,7 +78,10 @@ class SongGenerator:
     def __init__(self, base):
         self.muser = ms.Muser()
         self.paths = []
-        self.song = base
+        self.song = []
+        
+        for track in base:
+            self.song.append(list(track))
     
     def generateSong(self):
         # create filename
@@ -96,7 +99,22 @@ class SongGenerator:
         playsound(path)
 
     def mutateSong(self, rating, feedbackLastSong=rating.MID, noOfMutationsPerVariant = NO_OF_MUTATIONS_PER_VARIANT):
-        
+
+        if len(self.paths) <= 1:
+            
+            # mutate only existing song
+            for mutation in range(noOfMutationsPerVariant):
+                randomTrackId = random.randint(0, len(self.song) - 1)
+                randomNoteId = random.randint(0, len(self.song[randomTrackId]) - 1)
+
+                newRandomNote = (random.choice(POSSIBLE_NOTES), random.choice(POSSIBLE_NOTE_VALUES))
+
+                self.song[randomTrackId][randomNoteId] = newRandomNote
+        else:
+
+            # crossover between the highest rated tracks
+
+            # and introduce random mutations
 
         # step 1: selection
         # generate a song and score pieces of the song
@@ -108,5 +126,3 @@ class SongGenerator:
 
         # step 3: mutations
         # mutate random pieces in the songs
-
-        return s
