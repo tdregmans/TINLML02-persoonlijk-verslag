@@ -4,7 +4,7 @@
 
 ### Opdrachtbeschrijvng
 
-*De volledige opdrachtbeschrijving staat in [/Opdracht_1.pdf](/Opdracht_1.pdf).*
+*De volledige opdrachtbeschrijving staat in [/Opdracht_1.pdf](Opdracht_1.pdf).*
 
 Het doel is om te leren hoe Neurale Netwerken werken.
 
