@@ -4,8 +4,8 @@
     Thijs Dregmans
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
-    generator.py
-    Last edited: 2024-05-23 (YYYY-MM-DD)
+    Generator.py
+    Last edited: 2024-05-27 (YYYY-MM-DD)
     Version: 1.0
 
     back.py and muser.py come from: https://wiztech.nl/hr/ti/tinlab_ml/progs/music
@@ -20,9 +20,7 @@ import numpy as np
 from time import gmtime, strftime
 
 # constants
-NO_OF_ITERATIONS = 20
-NO_OF_VARIANTS_PER_ITERATION = 5
-NO_OF_MUTATIONS_PER_VARIANT = 10
+NO_OF_MUTATIONS_PER_VARIANT = 3
 
 # notes
 """
@@ -126,11 +124,55 @@ class SongGenerator:
     
     def crossoverTraits(self):
         # use self.ratings and self.songs to create a new song out of the best
-        pass
+        
+        noOfRatingsPerSong = len(self.ratings[0]) # assume that the noOfRatings stay constant
+
+        # find highest rating with id
+        highestRatingId = (-1, -1) # reprents the (songId, ratingId) of the highest rating ever
+        highestRating = -1
+        for songId in range(len(self.songs) - 1):
+            for ratingId in range(len(self.ratings[songId]) - 1):
+                if self.ratings[songId][ratingId] > highestRating:
+                    highestRating = self.ratings[songId][ratingId]
+                    highestRatingId = (songId, ratingId)
+
+        # find the lowest rating in the last song
+        lowestRatingId = (-1, -1) # reprents the (songId, ratingId) of the lowest rating ever
+        lowestRating = -1
+        for ratingId in range(len(self.ratings[-1]) - 1):
+            if self.ratings[-1][ratingId] < lowestRating or lowestRating == -1:
+                songId = len(self.ratings) - 1
+                lowestRating = self.ratings[songId][ratingId]
+                lowestRatingId = (songId, ratingId)
+        
+        # crossover the song-part of the best ever, with the worst in the last song
+        # WARNING! THIS PART OF THE FUNCTION ONLY WORKS WHEN NO_OF_RATINGS = 2
+        songId = len(self.ratings) - 1
+        for trackId in range(len(self.song) - 1):
+            # seperate track into 2 parts
+            # WARNING! THIS ONLY WORKS WHEN NO_OF_RATINGS = 2
+            # trackPart1 = self.song[trackId][:(len(self.song[trackId])//2)]
+            # trackPart2 = self.song[trackId][(len(self.song[trackId])//2):]
+
+            songWithHighestRating = self.songs[highestRatingId[0]]
+            if highestRatingId[1] == 0:
+                highestRatedTrackPart = songWithHighestRating[trackId][:(len(self.song[trackId])//2)]
+            else:
+                highestRatedTrackPart = songWithHighestRating[trackId][(len(self.song[trackId])//2):]
+
+            if lowestRatingId == 0:
+                self.song[trackId][:(len(self.song[trackId])//2)] = highestRatedTrackPart
+            else:
+                self.song[trackId][(len(self.song[trackId])//2):] = highestRatedTrackPart
+
+
+
 
     def mutateSong(self, ratings, feedbackLastSong=rating.MID, noOfMutationsPerVariant = NO_OF_MUTATIONS_PER_VARIANT):
 
         if len(self.paths) <= 1:
+            # store ratings 
+            self.ratings.append(ratings)
             
             # mutate only existing song
             self.mutateSongRandom()

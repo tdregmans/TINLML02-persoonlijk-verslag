@@ -5,7 +5,7 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     main.py
-    Last edited: 2024-05-23 (YYYY-MM-DD)
+    Last edited: 2024-05-27 (YYYY-MM-DD)
     Version: 1.0
 
     back.py and muser.py come from: https://wiztech.nl/hr/ti/tinlab_ml/progs/music
@@ -17,9 +17,8 @@ import bach
 import Generator as sg
 
 # constants
-NO_OF_ITERATIONS = 20
-NO_OF_VARIANTS_PER_ITERATION = 5
-NO_OF_MUTATIONS_PER_VARIANT = 10
+NO_OF_ITERATIONS = 4
+NO_OF_MUTATIONS_PER_VARIANT = 2
 NO_OF_RATINGS = 2
 
 def inputInt(prompt, errorMessage = ""):

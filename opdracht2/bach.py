@@ -5,7 +5,7 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     bach.py
-    Last edited: 2024-05-23 (YYYY-MM-DD)
+    Last edited: 2024-05-27 (YYYY-MM-DD)
     Version: 1.0
 
     source: https://wiztech.nl/hr/ti/tinlab_ml/progs/music
