@@ -1,4 +1,16 @@
-# source: https://wiztech.nl/hr/ti/tinlab_ml/progs/music
+"""
+
+    TINLML02
+    Thijs Dregmans
+    https://github.com/tdregmans/TINLML02-persoonlijk-verslag
+
+    muser.py
+    Last edited: 2024-05-27 (YYYY-MM-DD)
+    Version: 1.0
+
+    source: https://wiztech.nl/hr/ti/tinlab_ml/progs/music
+
+"""
 
 import glob as gl
 import os
@@ -7,9 +19,7 @@ import tomita.legacy.pysynth as ps
 import shutil as su
 
 class Muser:
-    def generate (self, song):
-        songFileName = 'song.wav'
-
+    def generate (self, song, songFileName):
         for trackIndex, track in enumerate (song):
             ps.make_wav (
                 track,
