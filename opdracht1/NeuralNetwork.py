@@ -5,8 +5,8 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     NeuralNetwork.py
-    Last edited: 2024-04-19 (YYYY-MM-DD)
-    Version: 3.0
+    Last edited: 2024-04-20 (YYYY-MM-DD)
+    Version: 3.1
 
 """
 
@@ -34,13 +34,7 @@ class NN:
         allLayers = [noOfInputs] + hiddenLayers + [noOfOutputs]
 
         for layerId in range(len(allLayers) - 1):
-            matrix = []
-            for origin in range(allLayers[layerId]):
-                row = []
-                for target in range(allLayers[layerId + 1]):
-                    row.append(random.random())
-                matrix.append(row)
-            self.network.append(matrix)
+            self.network.append(np.random.rand(allLayers[layerId],allLayers[layerId + 1]))
         
         print("Setup completed!")
 
@@ -175,5 +169,3 @@ class NN:
         # model outcome
         print("SUCCESSFUL OUTCOME:", all(results))
         print("SCORE:", results)
-
-
