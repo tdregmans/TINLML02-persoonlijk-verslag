@@ -34,6 +34,10 @@ Na gebruik van 'Node' en 'Link' objecten is overgegaan op gebruik van numpy matr
 
 Alle versies tot V5.0 veranderen de gewichten random. Er wordt dan gekeken of de verandering tot een beter resultaat heeft geleid. Als dat niet zo is, dan wordt de verandering teruggedraaid. Mocht dat wel zo zijn, dan is het model verbeterd in die cycli. De verandering blijft dan staan. Vanaf versie V5.0 wordt gebruik gemaakt van een Neuraal Netwerk dat met behulp van een 'cost-function' en backward propagation efficient het model verbeterd. Dit is gebaseerd op een code-snippet van geeksforgeeks.com: [example of backpropagation in machine learning](https://www.geeksforgeeks.org/backpropagation-in-machine-learning/#example-of-backpropagation-in-machine-learning). Dit voorbeeld is aangepast zodat het toepasbaar voor deze opdracht. Het is geimplementeerd in [branch opdracht1-v5.0](https://github.com/tdregmans/TINLML02-persoonlijk-verslag/tree/opdracht1-v5.0/opdracht1).
 
+#### V6.0
+
+Versie 6.0 is een totaal nieuw programma. het gebruikt geen random gewichten, maar door middel van het backpropagation algoritme bepaalt het de gemiddeld beste wijziging van de weights. Deze versie is geimplementeerd in [branch opdracht1-v6.0](https://github.com/tdregmans/TINLML02-persoonlijk-verslag/tree/opdracht1-v6.0/opdracht1).
+
 ### Tests
 
 Voor elke versie geldt dat het is getraind en daarna getest met de testSet die gegeven is in [data.py](https://github.com/tdregmans/TINLML02-persoonlijk-verslag/blob/main/opdracht1/data.py)
