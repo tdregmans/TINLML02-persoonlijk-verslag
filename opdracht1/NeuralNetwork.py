@@ -5,164 +5,162 @@
     https://github.com/tdregmans/TINLML02-persoonlijk-verslag
 
     NeuralNetwork.py
-    Last edited: 2024-04-20 (YYYY-MM-DD)
-    Version: 3.1
+    Last edited: 2024-06-12 (YYYY-MM-DD)
+    Version: 6.0
 
 """
 
-import random
 import numpy as np
 
-STANDARD_TESTING_STRICTNESS = 0.51
-STANDARD_TRAINING_STRICTNESS = 0.85 # Allow a 15% error margin
+class NeuralNetwork:
+    def __init__(self, noOfInputs, noOfHiddenNodes, noOfOutputs):
+        """
+        Set up a Neural Network with a number of inputs, hidden nodes and outputs.
+        The weights of the links between the nodes are randomly set.
+        """
+        self.noOfInputs = noOfInputs
+        self.noOfHiddenNodes = noOfHiddenNodes
+        self.noOfOutputs = noOfOutputs
 
-class NN:
-    def __init__(self, noOfInputs, noOfOutputs, hiddenLayers = []):
-        """
-        Neural Network constructor.
-        There is an optional parameter `hiddenLayers` which accepts a list with Integers (> 0) representing the hidden layers and the dimension of that layer.
-        For example, [3, 4, 9] stands for 3 hidden layers: the first has 3 nodes, the second has 4 nodes and the last hidden layer has 9 nodes.
-        """
-        self.network = []
+        # setup the network with random weights
+        self.weightsLayer1 = np.random.randn(self.noOfInputs, self.noOfHiddenNodes)
+        self.weightsLayer2 = np.random.randn(self.noOfHiddenNodes, self.noOfOutputs)
+
+        # start with no biases
+        self.biasesLayer1 = np.zeros((1, self.noOfHiddenNodes))
+        self.biasesLayer2 = np.zeros((1, self.noOfOutputs))
         
-        self.__setup(noOfInputs, noOfOutputs, hiddenLayers)
-
-    def __setup(self, noOfInputs, noOfOutputs, hiddenLayers):
-        """
-        Setup the model with matrices in self.network.
-        """
-        allLayers = [noOfInputs] + hiddenLayers + [noOfOutputs]
-
-        for layerId in range(len(allLayers) - 1):
-            self.network.append(np.random.rand(allLayers[layerId],allLayers[layerId + 1]))
-        
-        print("Setup completed!")
-
-    def trainingEpochs(self, trainingSet, trainingStrictness = STANDARD_TRAINING_STRICTNESS):
-        """
-        Train the model with trainingSet.
-        """
-        epochId = 0
-        while True:
-            print("Epoch:", epochId)
-            ##############################################################
-            
-            correctnessCounter = 0
-            for trainingSymbol in trainingSet:
-                evaluation = self.evaluateWithNetwork(trainingSymbol[0])
-
-                for evalItemSymbol, evalItemValue in evaluation.items():
-                    if evalItemValue > trainingStrictness and evalItemSymbol == trainingSymbol[1]:
-                        # guessed correctly
-                        correctnessCounter += 1
-                
-            correctnesBeforeChangingWeight = correctnessCounter
-
-            ##############################################################
-
-            # adjust one weight of links to look for a more acurate outcome            
-            allMatrices = self.network
-            randomMatrixId = random.choice(range(len(allMatrices)))
-            randomRowId = random.choice(range(len(self.network[randomMatrixId])))
-            randomLinkId = random.choice(range(len(self.network[randomMatrixId][randomRowId])))
-            oldLinkWeight = self.network[randomMatrixId][randomRowId][randomLinkId]
-            self.network[randomMatrixId][randomRowId][randomLinkId] = random.random()
-
-            ##############################################################
-
-            correctnessCounter = 0
-            for trainingSymbol in trainingSet:
-                evaluation = self.evaluateWithNetwork(trainingSymbol[0])
-
-                for evalItemSymbol, evalItemValue in evaluation.items():
-                    if evalItemValue > trainingStrictness and evalItemSymbol == trainingSymbol[1]:
-                        # guessed correctly
-                        correctnessCounter += 1
-                
-            correctnesAfterChangingWeight = correctnessCounter
-
-            ##############################################################
-
-            if correctnesAfterChangingWeight < correctnesBeforeChangingWeight:
-                # revert weight change because it did nothing good
-                self.network[randomMatrixId][randomRowId][randomLinkId] = oldLinkWeight
-
-            if correctnesAfterChangingWeight >= len(trainingSet):
-                break
-            #print()
-
-            epochId += 1
-
-        print("Training completed in", epochId, "epochs.")
-
-    def evaluateWithNetwork(self, symbol):
-        """
-        Evaluate a symbol (made up out of 3 times 3 times a '1' or '0') with the current Neural Network. Guess whether it is a 'X' or 'O'.
-        """
-        nodeValues = self.__denestNestedList(symbol)
-
-        for layerId in range(len(self.network)):
-            matrix = self.network[layerId]
-            nextNodeValues = []
-            
-            # foreach node in target
-            for targetId in range(len(matrix[0])):
-                # calculate new value
-                newValue = 0
-                for originId in range(len(matrix)):
-                    newValue += (self.network[layerId][originId][targetId] * nodeValues[originId])
-                
-                nextNodeValues.append(newValue)
-            
-            # assign values of next nodes to current nodes (for new layer)
-            nodeValues = nextNodeValues
-
-        # use softmax function for determining values
-        nodeValues = np.exp(nodeValues) / np.sum(np.exp(nodeValues))
-        # print(endNodeValues)
-
-        # return value endNodes
-        return {'O': nodeValues[0], 'X': nodeValues[1]}
-
-    def __denestNestedList(self, xss):
+    def __denestNestedList(xss):
         """
         Remove nested lists in list.
         source: https://stackoverflow.com/questions/952914/how-do-i-make-a-flat-list-out-of-a-list-of-lists
         """
         return [x for xs in xss for x in xs]
 
-    def testAndPrintResults(self, testSet, testStrictness = STANDARD_TESTING_STRICTNESS):
+    def __retrieveInputSets(sets):
         """
-        Test the Neural Network with testSet and print the results.
+        Retrieve all inputs from a trainingset or testset and denest the inputs.
+        """
+        out = []
+        for item in sets:
+            out.append(NeuralNetwork.__denestNestedList(item[0]))
+        
+        return out
+
+    def __retrieveOutputSets(sets):
+        """
+        Retrieve all outputs from a trainingset and convert output symbol to a list with probability for each symbol.
+        """
+        out = []
+        for item in sets:
+            if item[1] == 'O':
+                out.append([0, 1])
+            elif item[1] == 'X':
+                out.append([1, 0])
+
+        return out
+
+    def activation(x):
+        """
+        Activation function, used to calulate the activation in a numpy matrix.
+        """
+        return 1 / (1 + np.exp(-x))
+
+    def activationDerivative(x):
+        """
+        Activation derivative function, used to calulate the derivative of the activation to determine the delta of the value.
+        """
+        return x * (1 - x)
+
+    def feedforward(self, X):
+        """
+        Use the network to predict a outcome, or a set of outcomes.
+        """
+        # calulate the activation and values of the first layer
+        self.activationLayer1 = np.dot(X, self.weightsLayer1) + self.biasesLayer1
+        self.valuesLayer1 = NeuralNetwork.activation(self.activationLayer1)
+
+        # calulate the activation and values of the second layer
+        self.activationLayer2 = np.dot(self.valuesLayer1, self.weightsLayer2) + self.biasesLayer2
+        self.valuesLayer2 = NeuralNetwork.activation(self.activationLayer2)
+
+        return self.valuesLayer2
+
+    def backwardPropagation(self, X, y, learningRate):
+        """
+        Use the backward propagation algorithm to adjust the weights and biases of the network.
+        """
+        # calulate the activation and values of the second layer
+        errorLayer2 = y - self.valuesLayer2
+        differenceErrorLayer2 = errorLayer2 * NeuralNetwork.activationDerivative(self.valuesLayer2)
+
+        # calulate the activation and values of the first layer
+        errorLayer1 = np.dot(differenceErrorLayer2, self.weightsLayer2.T)
+        differenceErrorLayer1 = errorLayer1 * NeuralNetwork.activationDerivative(self.valuesLayer1)
+
+        # update the weights and biases
+        self.weightsLayer2 += np.dot(self.valuesLayer1.T, differenceErrorLayer2) * learningRate
+        self.biasesLayer2 += np.sum(differenceErrorLayer2, axis=0, keepdims=True) * learningRate
+        
+        self.weightsLayer1 += np.dot(X.T, differenceErrorLayer1) * learningRate
+        self.biasesLayer1 += np.sum(differenceErrorLayer1, axis=0, keepdims=True) * learningRate
+
+    def trainNetwork(self, trainData, noOfEpochs, learningRate):
+        """
+        Train the network with train data in a given no of epochs.
+        """
+        X = np.array(NeuralNetwork.__retrieveInputSets(trainData))
+        y = np.array(NeuralNetwork.__retrieveOutputSets(trainData))
+        
+        for epoch in range(noOfEpochs):
+            
+            # make prediction and use back propagation algorithm
+            output = self.feedforward(X)
+            self.backwardPropagation(X, y, learningRate)
+            
+            # calculate loss
+            loss = np.mean(np.square(y - output))
+            print(f"Epoch {epoch}, Loss:{loss}")
+
+    def predict(self, Z):
+        """
+        Use the network to predict whether a symbol is a 'X' or 'O'.
+        """
+        return self.feedforward(np.array(NeuralNetwork.__retrieveInputSets(Z)))
+    
+    def print(self, outputs, testset):
+        """
+        Print the results in a clear way.
         """
         results = []
-        testcaseId = 0
-        for testcase in testSet:
-            outcome = self.evaluateWithNetwork(testcase[0])
+        expectedOutputs = NeuralNetwork.__retrieveOutputSets(testset)
+
+        for outputId in range(len(outputs)):
+            output = outputs[outputId]
+            expectedOutput = expectedOutputs[outputId]
             
-            print("Testcase", testcaseId)
-            if outcome['X'] >= testStrictness and outcome['O'] < testStrictness:
-                print("Identified as 'X' (with a certainty of", round(outcome['X'], 2), ")")
-                if testcase[1] == 'X':
+            print("Testcase", outputId)
+
+            if output[0] > output[1]:
+                print("Identified as 'O' (with a certainty of", round(max(output), 2), ")")
+                if expectedOutput[0] > expectedOutput[1]:
                     print("Identified correctly!")
                     results.append(True)
                 else:
                     print("Identified wrongly!")
                     results.append(False)
-            elif outcome['O'] >= testStrictness and outcome['X'] < testStrictness:
-                print("Identified as 'O' (with a certainty of", round(outcome['O'], 2), ")")
-                if testcase[1] == 'O':
+            elif output[0] < output[1]:
+                print("Identified as 'X' (with a certainty of", round(max(output), 2), ")")
+                if expectedOutput[0] < expectedOutput[1]:
                     print("Identified correctly!")
                     results.append(True)
                 else:
                     print("Identified wrongly!")
                     results.append(False)
             else:
-                print("Could not identify symbol with certainty.")
-                print("Best guess:", outcome)
-                print("Should have been:", testcase[1])
+                print("Could not identify symbol.")
+                print("Outcome was 50/50!")
                 results.append(False)
-            testcaseId += 1
 
         print()
         
